@@ -2,8 +2,8 @@ from kfp import dsl, compiler
 from kfp.dsl import component, Input, Output, Dataset, Model, Metrics
 import os
 
-print("🚀 Script started")
-print("📁 Current working directory:", os.getcwd())
+print("🚀 SCRIPT STARTED")
+print("📁 Working directory:", os.getcwd())
 
 # -------------------------------
 # 1. Load Data
@@ -77,6 +77,7 @@ def evaluate_model(processed_data: Input[Dataset], model: Input[Model], metrics:
 # -------------------------------
 @dsl.pipeline(name="fraud-detection-pipeline")
 def pipeline():
+
     load_task = load_data()
 
     preprocess_task = preprocess_data(
@@ -94,7 +95,7 @@ def pipeline():
 
 
 # -------------------------------
-# 6. FORCE COMPILE + DEBUG
+# 6. FORCE EXECUTION (CRITICAL)
 # -------------------------------
 output_path = r"C:\Users\abcom\Desktop\kubeflow-fraud-detection\fraud_pipeline.yaml"
 
@@ -107,8 +108,7 @@ compiler.Compiler().compile(
 
 print("✅ Compilation finished")
 
-# verify file creation
 if os.path.exists(output_path):
     print("🎉 YAML CREATED SUCCESSFULLY")
 else:
-    print("❌ YAML NOT CREATED — CHECK ISSUE")
+    print("❌ YAML NOT CREATED")
