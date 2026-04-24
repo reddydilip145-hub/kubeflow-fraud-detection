@@ -93,3 +93,9 @@ def pipeline():
         processed_data=preprocess_task.outputs["processed_data"],
         model=train_task.outputs["model"]
     )
+    if __name__ == "__main__":
+    from kfp import compiler
+    compiler.Compiler().compile(
+        pipeline_func=pipeline,
+        package_path="fraud_pipeline.yaml"
+    )
