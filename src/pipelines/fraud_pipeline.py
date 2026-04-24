@@ -1,4 +1,4 @@
-from kfp import dsl
+from kfp import dsl, compiler
 from kfp.dsl import component, Input, Output, Dataset, Model, Metrics
 
 # -------------------------------
@@ -24,8 +24,6 @@ def preprocess_data(input_data: Input[Dataset], processed_data: Output[Dataset])
     import pandas as pd
 
     df = pd.read_csv(input_data.path)
-
-    # simple preprocessing
     df = df.dropna()
 
     df.to_csv(processed_data.path, index=False)
@@ -69,7 +67,6 @@ def evaluate_model(processed_data: Input[Dataset], model: Input[Model], metrics:
     preds = clf.predict(X)
 
     acc = accuracy_score(y, preds)
-
     metrics.log_metric("accuracy", acc)
 
 
@@ -96,11 +93,9 @@ def pipeline():
 
 
 # -------------------------------
-# 6. Compile Pipeline (IMPORTANT)
+# 6. Compile Pipeline (AUTO RUN)
 # -------------------------------
-if __name__ == "__main__":
-    from kfp import compiler
-    compiler.Compiler().compile(
-        pipeline_func=pipeline,
-        package_path="fraud_pipeline.yaml"
-    )
+compiler.Compiler().compile(
+    pipeline_func=pipeline,
+    package_path="fraud_pipeline.yaml"
+)
