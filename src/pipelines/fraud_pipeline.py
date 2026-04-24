@@ -1,5 +1,9 @@
 from kfp import dsl, compiler
 from kfp.dsl import component, Input, Output, Dataset, Model, Metrics
+import os
+
+print("🚀 Script started")
+print("📁 Current working directory:", os.getcwd())
 
 # -------------------------------
 # 1. Load Data
@@ -12,7 +16,6 @@ def load_data(output_data: Output[Dataset]):
     X, y = make_classification(n_samples=1000, weights=[0.95], random_state=42)
     df = pd.DataFrame(X)
     df['target'] = y
-
     df.to_csv(output_data.path, index=False)
 
 
@@ -25,7 +28,6 @@ def preprocess_data(input_data: Input[Dataset], processed_data: Output[Dataset])
 
     df = pd.read_csv(input_data.path)
     df = df.dropna()
-
     df.to_csv(processed_data.path, index=False)
 
 
@@ -75,7 +77,6 @@ def evaluate_model(processed_data: Input[Dataset], model: Input[Model], metrics:
 # -------------------------------
 @dsl.pipeline(name="fraud-detection-pipeline")
 def pipeline():
-
     load_task = load_data()
 
     preprocess_task = preprocess_data(
@@ -93,13 +94,21 @@ def pipeline():
 
 
 # -------------------------------
-# 6. FORCE COMPILATION (DEBUG SAFE)
+# 6. FORCE COMPILE + DEBUG
 # -------------------------------
-print("🚀 Starting pipeline compilation...")
+output_path = r"C:\Users\abcom\Desktop\kubeflow-fraud-detection\fraud_pipeline.yaml"
+
+print("🛠 Compiling pipeline to:", output_path)
 
 compiler.Compiler().compile(
     pipeline_func=pipeline,
-    package_path=r"C:\Users\abcom\Desktop\kubeflow-fraud-detection\fraud_pipeline.yaml"
+    package_path=output_path
 )
 
-print("✅ YAML file should now be created in project root!")
+print("✅ Compilation finished")
+
+# verify file creation
+if os.path.exists(output_path):
+    print("🎉 YAML CREATED SUCCESSFULLY")
+else:
+    print("❌ YAML NOT CREATED — CHECK ISSUE")
