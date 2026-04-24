@@ -4,7 +4,7 @@ from kfp.dsl import component, Input, Output, Dataset, Model, Metrics
 # -------------------------------
 # 1. Load Data
 # -------------------------------
-@component
+@component(base_image="python:3.10")
 def load_data(output_data: Output[Dataset]):
     import pandas as pd
     from sklearn.datasets import make_classification
@@ -19,13 +19,13 @@ def load_data(output_data: Output[Dataset]):
 # -------------------------------
 # 2. Preprocess Data
 # -------------------------------
-@component
+@component(base_image="python:3.10")
 def preprocess_data(input_data: Input[Dataset], processed_data: Output[Dataset]):
     import pandas as pd
 
     df = pd.read_csv(input_data.path)
 
-    # simple preprocessing (can extend later)
+    # simple preprocessing
     df = df.dropna()
 
     df.to_csv(processed_data.path, index=False)
@@ -34,7 +34,7 @@ def preprocess_data(input_data: Input[Dataset], processed_data: Output[Dataset])
 # -------------------------------
 # 3. Train Model
 # -------------------------------
-@component
+@component(base_image="python:3.10")
 def train_model(processed_data: Input[Dataset], model: Output[Model]):
     import pandas as pd
     from sklearn.ensemble import RandomForestClassifier
@@ -54,7 +54,7 @@ def train_model(processed_data: Input[Dataset], model: Output[Model]):
 # -------------------------------
 # 4. Evaluate Model
 # -------------------------------
-@component
+@component(base_image="python:3.10")
 def evaluate_model(processed_data: Input[Dataset], model: Input[Model], metrics: Output[Metrics]):
     import pandas as pd
     import joblib
@@ -93,7 +93,12 @@ def pipeline():
         processed_data=preprocess_task.outputs["processed_data"],
         model=train_task.outputs["model"]
     )
-    if __name__ == "__main__":
+
+
+# -------------------------------
+# 6. Compile Pipeline (IMPORTANT)
+# -------------------------------
+if __name__ == "__main__":
     from kfp import compiler
     compiler.Compiler().compile(
         pipeline_func=pipeline,
