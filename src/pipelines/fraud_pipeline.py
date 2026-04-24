@@ -71,7 +71,7 @@ def evaluate_model(processed_data: Input[Dataset], model: Input[Model], metrics:
 
 
 # -------------------------------
-# 5. Pipeline Definition (DAG)
+# 5. Pipeline Definition
 # -------------------------------
 @dsl.pipeline(name="fraud-detection-pipeline")
 def pipeline():
@@ -93,9 +93,13 @@ def pipeline():
 
 
 # -------------------------------
-# 6. Compile Pipeline (AUTO RUN)
+# 6. FORCE COMPILATION (DEBUG SAFE)
 # -------------------------------
+print("🚀 Starting pipeline compilation...")
+
 compiler.Compiler().compile(
     pipeline_func=pipeline,
-    package_path="fraud_pipeline.yaml"
+    package_path=r"C:\Users\abcom\Desktop\kubeflow-fraud-detection\fraud_pipeline.yaml"
 )
+
+print("✅ YAML file should now be created in project root!")
