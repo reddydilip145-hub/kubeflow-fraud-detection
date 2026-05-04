@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kubeflow Fraud Detection Pipeline Architecture</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1f2937;
+      background: #f7f8fb;
+      line-height: 1.5;
+    }
+    header {
+      background: #153e75;
+      color: white;
+      padding: 32px 40px;
+    }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 24px 56px;
+    }
+    section {
+      background: white;
+      border: 1px solid #d9e2ec;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+    h2 {
+      color: #153e75;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      border: 1px solid #d9e2ec;
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #eef4ff;
+    }
+    .diagram {
+      overflow-x: auto;
+      background: #fbfdff;
+      border: 1px solid #d9e2ec;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .box {
+      fill: #ffffff;
+      stroke: #2f80ed;
+      stroke-width: 2;
+      rx: 8;
+    }
+    .store {
+      fill: #fff7e6;
+      stroke: #d97706;
+    }
+    .runtime {
+      fill: #ecfdf5;
+      stroke: #059669;
+    }
+    .meta {
+      fill: #f5f3ff;
+      stroke: #7c3aed;
+    }
+    .label {
+      font-size: 13px;
+      fill: #111827;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .small {
+      font-size: 12px;
+    }
+    .arrow {
+      stroke: #475569;
+      stroke-width: 2;
+      fill: none;
+      marker-end: url(#arrow);
+    }
+    code {
+      background: #eef2f7;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Kubeflow Fraud Detection Pipeline Architecture</h1>
+    <p>Fraud detection ML workflow using Kubeflow Pipelines, Argo Workflows, Kubernetes/GKE, MySQL, ML Metadata, and SeaweedFS.</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Architecture Diagram</h2>
+      <div class="diagram">
+        <svg width="1060" height="620" role="img" aria-label="Kubeflow fraud detection architecture diagram">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"></path>
+            </marker>
+          </defs>
+
+          <rect class="box" x="30" y="40" width="170" height="70"></rect>
+          <text class="label" x="115" y="66">Developer</text>
+          <text class="label small" x="115" y="86">GitHub Repo</text>
+
+          <rect class="box" x="250" y="40" width="170" height="70"></rect>
+          <text class="label" x="335" y="66">fraud_pipeline.py</text>
+          <text class="label small" x="335" y="86">KFP DSL code</text>
+
+          <rect class="box" x="470" y="40" width="170" height="70"></rect>
+          <text class="label" x="555" y="66">fraud.yaml</text>
+          <text class="label small" x="555" y="86">Compiled pipeline</text>
+
+          <rect class="box" x="690" y="40" width="170" height="70"></rect>
+          <text class="label" x="775" y="66">ml-pipeline-ui</text>
+          <text class="label small" x="775" y="86">Kubeflow UI</text>
+
+          <rect class="box" x="690" y="160" width="170" height="70"></rect>
+          <text class="label" x="775" y="186">ml-pipeline</text>
+          <text class="label small" x="775" y="206">API server</text>
+
+          <rect class="box" x="470" y="160" width="170" height="70"></rect>
+          <text class="label" x="555" y="186">Argo Workflow</text>
+          <text class="label small" x="555" y="206">Controller</text>
+
+          <rect class="runtime" x="90" y="300" width="150" height="65"></rect>
+          <text class="label" x="165" y="324">load-data</text>
+          <text class="label small" x="165" y="344">Generate dataset</text>
+
+          <rect class="runtime" x="310" y="300" width="150" height="65"></rect>
+          <text class="label" x="385" y="324">preprocess-data</text>
+          <text class="label small" x="385" y="344">Clean dataset</text>
+
+          <rect class="runtime" x="530" y="300" width="150" height="65"></rect>
+          <text class="label" x="605" y="324">train-model</text>
+          <text class="label small" x="605" y="344">RandomForest</text>
+
+          <rect class="runtime" x="750" y="300" width="150" height="65"></rect>
+          <text class="label" x="825" y="324">evaluate-model</text>
+          <text class="label small" x="825" y="344">Log metrics</text>
+
+          <rect class="store" x="90" y="470" width="210" height="70"></rect>
+          <text class="label" x="195" y="496">SeaweedFS</text>
+          <text class="label small" x="195" y="516">S3-compatible artifacts</text>
+
+          <rect class="meta" x="425" y="470" width="210" height="70"></rect>
+          <text class="label" x="530" y="496">MySQL</text>
+          <text class="label small" x="530" y="516">Experiments / runs DB</text>
+
+          <rect class="meta" x="760" y="470" width="210" height="70"></rect>
+          <text class="label" x="865" y="496">ML Metadata</text>
+          <text class="label small" x="865" y="516">Lineage and artifacts</text>
+
+          <path class="arrow" d="M 200 75 L 250 75"></path>
+          <path class="arrow" d="M 420 75 L 470 75"></path>
+          <path class="arrow" d="M 640 75 L 690 75"></path>
+          <path class="arrow" d="M 775 110 L 775 160"></path>
+          <path class="arrow" d="M 690 195 L 640 195"></path>
+          <path class="arrow" d="M 555 230 L 555 270 L 165 270 L 165 300"></path>
+          <path class="arrow" d="M 240 332 L 310 332"></path>
+          <path class="arrow" d="M 460 332 L 530 332"></path>
+          <path class="arrow" d="M 680 332 L 750 332"></path>
+          <path class="arrow" d="M 165 365 L 195 470"></path>
+          <path class="arrow" d="M 385 365 L 195 470"></path>
+          <path class="arrow" d="M 605 365 L 195 470"></path>
+          <path class="arrow" d="M 825 365 L 195 470"></path>
+          <path class="arrow" d="M 775 230 L 530 470"></path>
+          <path class="arrow" d="M 825 365 L 865 470"></path>
+        </svg>
+      </div>
+    </section>
+
+    <section>
+      <h2>Pipeline Steps</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Purpose</th>
+            <th>Output</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>load-data</code></td>
+            <td>Creates an imbalanced synthetic fraud-like dataset.</td>
+            <td>Raw dataset artifact</td>
+          </tr>
+          <tr>
+            <td><code>preprocess-data</code></td>
+            <td>Reads the dataset and removes missing values.</td>
+            <td>Processed dataset artifact</td>
+          </tr>
+          <tr>
+            <td><code>train-model</code></td>
+            <td>Trains a RandomForestClassifier.</td>
+            <td>Model artifact</td>
+          </tr>
+          <tr>
+            <td><code>evaluate-model</code></td>
+            <td>Calculates model metrics.</td>
+            <td>Accuracy, precision, recall, F1 score</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Kubeflow Components</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>ml-pipeline-ui</code></td>
+            <td>Web UI for pipeline upload, experiments, and runs.</td>
+          </tr>
+          <tr>
+            <td><code>ml-pipeline</code></td>
+            <td>Backend API for pipeline definitions, experiments, runs, and workflow creation.</td>
+          </tr>
+          <tr>
+            <td><code>workflow-controller</code></td>
+            <td>Argo controller that launches pipeline tasks as Kubernetes pods.</td>
+          </tr>
+          <tr>
+            <td><code>mysql</code></td>
+            <td>Stores pipeline, experiment, and run metadata.</td>
+          </tr>
+          <tr>
+            <td><code>metadata-grpc</code> / <code>metadata-envoy</code></td>
+            <td>ML Metadata services for artifact lineage and execution metadata.</td>
+          </tr>
+          <tr>
+            <td><code>seaweedfs</code> / <code>minio-service</code></td>
+            <td>S3-compatible artifact and log storage.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Runtime Flow</h2>
+      <ol>
+        <li>Developer writes <code>fraud_pipeline.py</code>.</li>
+        <li>The pipeline is compiled into <code>fraud.yaml</code>.</li>
+        <li><code>fraud.yaml</code> is uploaded into Kubeflow Pipelines UI.</li>
+        <li>User creates or selects an experiment.</li>
+        <li>User starts a one-off run.</li>
+        <li><code>ml-pipeline</code> creates an Argo Workflow.</li>
+        <li>Argo launches one Kubernetes pod per pipeline step.</li>
+        <li>Artifacts are written to SeaweedFS.</li>
+        <li>Metadata is written to MySQL and ML Metadata.</li>
+        <li>Metrics appear in the Kubeflow Pipelines UI.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Fraud Detection Metrics</h2>
+      <p>For fraud detection, accuracy alone can be misleading because the data is imbalanced. The important metrics are:</p>
+      <ul>
+        <li><code>precision</code></li>
+        <li><code>recall</code></li>
+        <li><code>f1_score</code></li>
+        <li><code>accuracy</code></li>
+      </ul>
+      <p>Recall and F1 score are especially important when the goal is to catch rare fraud cases.</p>
+    </section>
+  </main>
+</body>
+</html>
