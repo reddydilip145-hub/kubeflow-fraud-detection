@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+  <title id="title">Kubeflow Fraud Detection Pipeline Architecture</title>
+  <desc id="desc">Architecture diagram showing development, Kubeflow control plane, Argo runtime pods, artifact storage, metadata, and final metrics.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3f4a5a"/>
+    </marker>
+    <style>
+      .bg { fill: #f7f9fc; }
+      .panel { fill: #ffffff; stroke: #c9d3e1; stroke-width: 2; rx: 16; }
+      .panel-title { font: 700 24px Arial, sans-serif; fill: #1f2d3d; }
+      .box { fill: #eef6ff; stroke: #6aa6e8; stroke-width: 2; rx: 12; }
+      .box-green { fill: #eefaf1; stroke: #5cad6f; stroke-width: 2; rx: 12; }
+      .box-orange { fill: #fff6e8; stroke: #e2a84c; stroke-width: 2; rx: 12; }
+      .box-purple { fill: #f5f0ff; stroke: #9b7be5; stroke-width: 2; rx: 12; }
+      .box-red { fill: #fff1f0; stroke: #d97871; stroke-width: 2; rx: 12; }
+      .label { font: 700 17px Arial, sans-serif; fill: #243447; }
+      .small { font: 14px Arial, sans-serif; fill: #506070; }
+      .tiny { font: 12px Arial, sans-serif; fill: #657487; }
+      .line { stroke: #3f4a5a; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke-dasharray: 8 7; }
+      .metric { fill: #ffffff; stroke: #aab7c8; stroke-width: 1.5; rx: 8; }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1400" height="900"/>
+
+  <text x="700" y="46" text-anchor="middle" style="font: 800 32px Arial, sans-serif; fill: #182233;">Kubeflow Fraud Detection Pipeline Architecture</text>
+  <text x="700" y="76" text-anchor="middle" class="small">Final hardened 50,000-row split pipeline with realistic metrics and test-set evaluation</text>
+
+  <rect class="panel" x="40" y="115" width="300" height="285"/>
+  <text class="panel-title" x="70" y="155">Development</text>
+  <rect class="box" x="75" y="185" width="230" height="62"/>
+  <text class="label" x="190" y="213" text-anchor="middle">fraud_pipeline_harder.py</text>
+  <text class="small" x="190" y="235" text-anchor="middle">KFP DSL source</text>
+  <rect class="box" x="75" y="285" width="230" height="62"/>
+  <text class="label" x="190" y="313" text-anchor="middle">fraud_harder_split.yaml</text>
+  <text class="small" x="190" y="335" text-anchor="middle">Compiled pipeline spec</text>
+  <path class="line" d="M190 247 L190 285"/>
+
+  <rect class="panel" x="390" y="115" width="300" height="285"/>
+  <text class="panel-title" x="420" y="155">Kubeflow Control Plane</text>
+  <rect class="box-green" x="430" y="185" width="220" height="54"/>
+  <text class="label" x="540" y="218" text-anchor="middle">ml-pipeline-ui</text>
+  <rect class="box-green" x="430" y="260" width="220" height="54"/>
+  <text class="label" x="540" y="293" text-anchor="middle">ml-pipeline API</text>
+  <rect class="box-green" x="430" y="335" width="220" height="44"/>
+  <text class="label" x="540" y="363" text-anchor="middle">persistence agent</text>
+  <path class="line" d="M540 239 L540 260"/>
+  <path class="line" d="M540 314 L540 335"/>
+
+  <rect class="panel" x="740" y="115" width="300" height="285"/>
+  <text class="panel-title" x="770" y="155">Argo Runtime</text>
+  <rect class="box-purple" x="775" y="185" width="230" height="58"/>
+  <text class="label" x="890" y="212" text-anchor="middle">workflow-controller</text>
+  <text class="small" x="890" y="233" text-anchor="middle">creates workflow pods</text>
+  <rect class="box-purple" x="775" y="275" width="230" height="58"/>
+  <text class="label" x="890" y="302" text-anchor="middle">argoexec non-root</text>
+  <text class="small" x="890" y="323" text-anchor="middle">v3.7.3-nonroot</text>
+  <path class="line" d="M890 243 L890 275"/>
+
+  <rect class="panel" x="1090" y="115" width="270" height="285"/>
+  <text class="panel-title" x="1120" y="155">Storage + Metadata</text>
+  <rect class="box-orange" x="1125" y="190" width="200" height="58"/>
+  <text class="label" x="1225" y="217" text-anchor="middle">SeaweedFS</text>
+  <text class="small" x="1225" y="238" text-anchor="middle">Artifacts / models</text>
+  <rect class="box-orange" x="1125" y="275" width="200" height="58"/>
+  <text class="label" x="1225" y="302" text-anchor="middle">MySQL</text>
+  <text class="small" x="1225" y="323" text-anchor="middle">Pipeline metadata</text>
+  <rect class="box-orange" x="1125" y="350" width="200" height="34"/>
+  <text class="label" x="1225" y="373" text-anchor="middle">ML Metadata</text>
+
+  <path class="line" d="M305 316 L430 287"/>
+  <path class="line" d="M650 287 L775 214"/>
+  <path class="line" d="M1005 304 L1125 219"/>
+  <path class="line" d="M650 357 L1125 304"/>
+
+  <rect class="panel" x="130" y="455" width="1140" height="250"/>
+  <text class="panel-title" x="165" y="495">Pipeline Data Flow</text>
+
+  <rect class="box" x="175" y="535" width="160" height="72"/>
+  <text class="label" x="255" y="563" text-anchor="middle">load-data</text>
+  <text class="small" x="255" y="585" text-anchor="middle">50,000 rows</text>
+
+  <rect class="box" x="385" y="535" width="160" height="72"/>
+  <text class="label" x="465" y="563" text-anchor="middle">preprocess-data</text>
+  <text class="small" x="465" y="585" text-anchor="middle">drop missing rows</text>
+
+  <rect class="box" x="595" y="535" width="160" height="72"/>
+  <text class="label" x="675" y="563" text-anchor="middle">split-data</text>
+  <text class="small" x="675" y="585" text-anchor="middle">stratified split</text>
+
+  <rect class="box" x="805" y="500" width="160" height="72"/>
+  <text class="label" x="885" y="528" text-anchor="middle">train-model</text>
+  <text class="small" x="885" y="550" text-anchor="middle">RandomForest</text>
+
+  <rect class="box" x="805" y="625" width="160" height="52"/>
+  <text class="label" x="885" y="656" text-anchor="middle">test_data</text>
+
+  <rect class="box-red" x="1015" y="535" width="180" height="72"/>
+  <text class="label" x="1105" y="563" text-anchor="middle">evaluate-model</text>
+  <text class="small" x="1105" y="585" text-anchor="middle">test set only</text>
+
+  <path class="line" d="M335 571 L385 571"/>
+  <path class="line" d="M545 571 L595 571"/>
+  <path class="line" d="M755 560 L805 536"/>
+  <path class="line" d="M755 590 L805 651"/>
+  <path class="line" d="M965 536 L1015 560"/>
+  <path class="line" d="M965 651 L1015 585"/>
+
+  <text class="tiny" x="805" y="488">train_data: 40,000 rows</text>
+  <text class="tiny" x="805" y="695">test_data: 10,000 rows, 444 fraud rows</text>
+
+  <rect class="panel" x="230" y="745" width="940" height="105"/>
+  <text class="panel-title" x="260" y="783">Final Metrics</text>
+  <rect class="metric" x="260" y="805" width="120" height="30"/>
+  <text class="small" x="320" y="825" text-anchor="middle">accuracy 0.9593</text>
+  <rect class="metric" x="395" y="805" width="125" height="30"/>
+  <text class="small" x="457" y="825" text-anchor="middle">precision 0.8776</text>
+  <rect class="metric" x="535" y="805" width="115" height="30"/>
+  <text class="small" x="592" y="825" text-anchor="middle">recall 0.0968</text>
+  <rect class="metric" x="665" y="805" width="115" height="30"/>
+  <text class="small" x="722" y="825" text-anchor="middle">f1 0.1744</text>
+  <rect class="metric" x="795" y="805" width="125" height="30"/>
+  <text class="small" x="857" y="825" text-anchor="middle">roc_auc 0.6902</text>
+  <rect class="metric" x="935" y="805" width="190" height="30"/>
+  <text class="small" x="1030" y="825" text-anchor="middle">mismatch_count 407</text>
+</svg>
